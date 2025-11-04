@@ -1,4 +1,4 @@
-# SolidityPack v2
+# SolidityPack
 
 Gas-efficient, self-describing serialization format for Solidity with **modular encoder/decoder packages** to minimize smart contract bytecode size.
 
