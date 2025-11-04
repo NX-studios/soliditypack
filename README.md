@@ -6,18 +6,18 @@ Gas-efficient, self-describing serialization format for Solidity with **modular 
 [![Solidity](https://img.shields.io/badge/solidity-^0.8.0-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-blue)]()
 
-## 🚀 Features
+## Features
 
-- **🔧 Modular Design**: Separate encoder and decoder libraries - only import what you need to save bytecode
-- **🎯 Type-Safe**: Strongly typed encoding/decoding for all Solidity types
-- **🔍 Generic Decoding**: Automatically detect and decode unknown data structures
-- **⚡ Gas Optimized**: Hand-tuned assembly for efficient memory operations
-- **📦 Nested Support**: Encode/decode complex nested objects, arrays, and maps
-- **🔗 MessagePack Compatible**: Basic types use standard MessagePack format
-- **💎 Ethereum Native**: Built-in support for `address`, `bytes32`, and `uint256`
-- **🌐 Cross-Platform**: Works in both Solidity smart contracts and JavaScript/Node.js
+- **Modular Design**: Separate encoder and decoder libraries - only import what you need to save bytecode
+- **Type-Safe**: Strongly typed encoding/decoding for all Solidity types
+- **Generic Decoding**: Automatically detect and decode unknown data structures
+- **Gas Optimized**: Hand-tuned assembly for efficient memory operations
+- **Nested Support**: Encode/decode complex nested objects, arrays, and maps
+- **MessagePack Compatible**: Basic types use standard MessagePack format
+- **Ethereum Native**: Built-in support for `address`, `bytes32`, and `uint256`
+- **Cross-Platform**: Works in both Solidity smart contracts and JavaScript/Node.js
 
-## 📦 Installation
+## Installation
 
 ### JavaScript/Node.js
 
@@ -62,7 +62,7 @@ import "soliditypack/contracts/SolidityPackDecoder.sol";
 import "soliditypack/contracts/SolidityPackTypes.sol";
 ```
 
-## 🎯 Quick Start
+## Quick Start
 
 ### JavaScript
 
@@ -150,7 +150,7 @@ contract MyContract {
 }
 ```
 
-## 💡 Usage Examples
+## Usage Examples
 
 ### Example 1: Encode Simple Object (JavaScript)
 
@@ -286,9 +286,9 @@ const decoded = decode(encoded);
 // Perfect round-trip! Handles arbitrary nesting.
 ```
 
-## 🎨 Primitives for working with objects
+## Object Field Helpers
 
-SolidityPack has a number of **convenience functions** that make encoding objects **50% more concise**!
+Convenience functions that make encoding objects 50% more concise:
 
 ### Before (Verbose)
 
@@ -360,7 +360,7 @@ function encodeTransaction(
 - Same gas efficiency (no overhead)
 - Backward compatible (old API still works)
 
-## 📚 API Reference
+## API Reference
 
 ### JavaScript API
 
@@ -471,7 +471,7 @@ SolidityPackDecoder.hasMore(dec)
 SolidityPackDecoder.skip(dec)
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Run JavaScript Examples
 
@@ -500,14 +500,14 @@ npm run compile              # Compile contracts
   - 11 improved API tests
 ```
 
-## 📖 Documentation
+## Documentation
 
 - **[EXAMPLES.md](EXAMPLES.md)** - Comprehensive examples with both Solidity and JavaScript
 - **[DECODE_GUIDE.md](DECODE_GUIDE.md)** - Complete guide to the decode() function
 - **[NESTED_STRUCTURES.md](NESTED_STRUCTURES.md)** - How nested maps and arrays work
 - **[MSGPACK_COMPATIBILITY.md](MSGPACK_COMPATIBILITY.md)** - MessagePack compatibility details
 
-## 🔧 Supported Types
+## Supported Types
 
 ### Primitive Types
 - `bool` - Boolean (true/false)
@@ -526,7 +526,7 @@ npm run compile              # Compile contracts
 - **Maps/Objects** - Key-value pairs with string keys
 - **Nested Structures** - Arbitrary nesting of arrays and maps
 
-## 💾 Bytecode Optimization
+## Bytecode Optimization
 
 Import **only what you need**:
 
@@ -552,7 +552,7 @@ import "soliditypack/contracts/SolidityPackTypes.sol";
 // Full functionality
 ```
 
-## 🌐 MessagePack Compatibility
+## MessagePack Compatibility
 
 SolidityPack uses **MessagePack format** for basic types with **Ethereum extensions**:
 
@@ -570,7 +570,7 @@ SolidityPack uses **MessagePack format** for basic types with **Ethereum extensi
 
 See [MSGPACK_COMPATIBILITY.md](MSGPACK_COMPATIBILITY.md) for details.
 
-## 🎯 Use Cases
+## Use Cases
 
 - **Smart Contract Storage**: Efficiently encode complex data structures
 - **Cross-Chain Communication**: Serialize data for chain-to-chain messaging
@@ -579,7 +579,7 @@ See [MSGPACK_COMPATIBILITY.md](MSGPACK_COMPATIBILITY.md) for details.
 - **API Responses**: Serialize contract data for web frontends
 - **State Snapshots**: Compact state serialization
 
-## 🔍 How It Works
+## How It Works
 
 ### Encoding
 ```
@@ -606,35 +606,28 @@ The decoder:
 3. Recursively decodes nested elements
 4. Returns native JavaScript/Solidity types
 
-## 📊 Performance
+## Performance
 
 - **Compact**: ~30-50% smaller than JSON for typical data
 - **Fast**: Hand-optimized assembly for critical paths
 - **Gas Efficient**: Minimal gas usage in Solidity
 - **No External Calls**: Pure functions, no SLOAD/SSTORE
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! Please check:
 - Tests pass: `npm test`
 - Examples work: `npm run example`
 - Code compiles: `npm run compile`
 
-## 📄 License
+## License
 
 MIT License - see LICENSE file for details
 
-## 🚀 Quick Links
+## Quick Links
 
 - **Install**: `npm install soliditypack`
 - **Test Suite**: `npm test` - 46 passing tests
-- **Run Examples**: `npm run example:user` - See encoding `{test: 42, test2: []}`
-- **Compile**: `npm run compile` - Build Solidity contracts
+- **Run Examples**: `npm run example:user`
+- **Compile**: `npm run compile`
 - **Docs**: See `*.md` files for comprehensive guides
-
-
----
-
-**Made with ❤️ for the Ethereum community**
-
-Need help? Open an issue on the repository!
