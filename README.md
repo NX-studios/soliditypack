@@ -540,20 +540,6 @@ MIT License - see LICENSE file for details
 - **Compile**: `npm run compile` - Build Solidity contracts
 - **Docs**: See `*.md` files for comprehensive guides
 
-## 📝 Publishing
-
-To publish this package to npm:
-
-```bash
-# Make sure tests pass
-npm test
-
-# Update version
-npm version patch  # or minor, or major
-
-# Publish to npm
-npm publish
-```
 
 ---
 
