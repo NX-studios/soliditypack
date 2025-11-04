@@ -1,0 +1,66 @@
+{
+  "name": "soliditypack",
+  "version": "2.0.0",
+  "description": "Gas-efficient, self-describing serialization format for Solidity with modular encoder/decoder packages",
+  "main": "./index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./encoder": {
+      "import": "./lib/encoder.js"
+    },
+    "./decoder": {
+      "import": "./lib/decoder.js"
+    },
+    "./helpers": {
+      "import": "./lib/helpers.js"
+    },
+    "./contracts/*": "./contracts/*"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "contracts/"
+  ],
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "clean": "hardhat clean",
+    "verify": "node verify-exports.js",
+    "prepublishOnly": "npm run compile && npm test",
+    "example": "node examples/encode-example.js",
+    "example:decode": "node examples/general-decode.js",
+    "example:decode-after": "node examples/decode-after-map.js",
+    "example:nested": "node examples/nested-structures.js",
+    "example:sequential": "node examples/sequential-encoding.js",
+    "example:user": "node examples/encode-user-example.js",
+    "example:msgpack": "node examples/msgpack-compatibility.js"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "serialization",
+    "messagepack",
+    "encoding",
+    "decoding",
+    "smart-contracts",
+    "gas-optimization",
+    "web3",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "homepage": "",
+  "bugs": {
+    "url": ""
+  },
+  "devDependencies": {
+    "hardhat": "^3.0.10"
+  }
+}

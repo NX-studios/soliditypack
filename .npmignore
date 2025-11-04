@@ -1,0 +1,36 @@
+# Development files
+examples/
+test/
+.git/
+.github/
+
+# Build artifacts (but keep compiled contracts if needed)
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Config files
+hardhat.config.js
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Keep documentation files for users
+# EXAMPLES.md
+# NESTED_STRUCTURES.md
+# DECODE_GUIDE.md
+# MSGPACK_COMPATIBILITY.md
