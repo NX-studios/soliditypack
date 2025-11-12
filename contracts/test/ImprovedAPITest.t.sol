@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../SolidityPackEncoder.sol";
+import "../SPack.sol";
 import "../SolidityPackDecoder.sol";
 import "../SolidityPackTypes.sol";
 import "../examples/ImprovedAPIExample.sol";
 
 /**
  * @title ImprovedAPITest
- * @notice Tests for the improved field encoding API
+ * @notice Tests for the SPack API
  */
 contract ImprovedAPITest {
 
@@ -65,15 +65,15 @@ contract ImprovedAPITest {
     }
 
     /**
-     * @notice Test encodeFieldUint
+     * @notice Test encoding uint field
      */
     function testEncodeFieldUint() public pure {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 1);
+        SPack.s(b, "count");
+        SPack.u(b, 42);
+        bytes memory encoded = SPack.done(b);
 
-        SolidityPackEncoder.startObject(enc, 1);
-        SolidityPackEncoder.encodeFieldUint(enc, "count", 42);
-
-        bytes memory encoded = SolidityPackEncoder.getEncoded(enc);
         SolidityPackTypes.Decoder memory dec = SolidityPackDecoder.newDecoder(encoded);
 
         uint256 mapLen = SolidityPackDecoder.decodeMapLength(dec);
@@ -87,15 +87,15 @@ contract ImprovedAPITest {
     }
 
     /**
-     * @notice Test encodeFieldString
+     * @notice Test encoding string field
      */
     function testEncodeFieldString() public pure {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 1);
+        SPack.s(b, "message");
+        SPack.s(b, "hello");
+        bytes memory encoded = SPack.done(b);
 
-        SolidityPackEncoder.startObject(enc, 1);
-        SolidityPackEncoder.encodeFieldString(enc, "message", "hello");
-
-        bytes memory encoded = SolidityPackEncoder.getEncoded(enc);
         SolidityPackTypes.Decoder memory dec = SolidityPackDecoder.newDecoder(encoded);
 
         SolidityPackDecoder.decodeMapLength(dec);
@@ -106,16 +106,17 @@ contract ImprovedAPITest {
     }
 
     /**
-     * @notice Test encodeFieldAddress
+     * @notice Test encoding address field
      */
     function testEncodeFieldAddress() public pure {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
         address testAddr = 0x742d35cC6634c0532925A3b844bc9E7595F0beB1;
-        SolidityPackEncoder.startObject(enc, 1);
-        SolidityPackEncoder.encodeFieldAddress(enc, "wallet", testAddr);
 
-        bytes memory encoded = SolidityPackEncoder.getEncoded(enc);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 1);
+        SPack.s(b, "wallet");
+        SPack.a(b, testAddr);
+        bytes memory encoded = SPack.done(b);
+
         SolidityPackTypes.Decoder memory dec = SolidityPackDecoder.newDecoder(encoded);
 
         SolidityPackDecoder.decodeMapLength(dec);
@@ -126,16 +127,17 @@ contract ImprovedAPITest {
     }
 
     /**
-     * @notice Test encodeFieldBool
+     * @notice Test encoding bool field
      */
     function testEncodeFieldBool() public pure {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 2);
+        SPack.s(b, "isActive");
+        SPack.bool_(b, true);
+        SPack.s(b, "isPaused");
+        SPack.bool_(b, false);
+        bytes memory encoded = SPack.done(b);
 
-        SolidityPackEncoder.startObject(enc, 2);
-        SolidityPackEncoder.encodeFieldBool(enc, "isActive", true);
-        SolidityPackEncoder.encodeFieldBool(enc, "isPaused", false);
-
-        bytes memory encoded = SolidityPackEncoder.getEncoded(enc);
         SolidityPackTypes.Decoder memory dec = SolidityPackDecoder.newDecoder(encoded);
 
         SolidityPackDecoder.decodeMapLength(dec);
@@ -151,16 +153,17 @@ contract ImprovedAPITest {
     }
 
     /**
-     * @notice Test encodeFieldBytes32
+     * @notice Test encoding bytes32 field
      */
     function testEncodeFieldBytes32() public pure {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
         bytes32 testHash = keccak256("test");
-        SolidityPackEncoder.startObject(enc, 1);
-        SolidityPackEncoder.encodeFieldBytes32(enc, "hash", testHash);
 
-        bytes memory encoded = SolidityPackEncoder.getEncoded(enc);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 1);
+        SPack.s(b, "hash");
+        SPack.b32(b, testHash);
+        bytes memory encoded = SPack.done(b);
+
         SolidityPackTypes.Decoder memory dec = SolidityPackDecoder.newDecoder(encoded);
 
         SolidityPackDecoder.decodeMapLength(dec);
@@ -171,20 +174,23 @@ contract ImprovedAPITest {
     }
 
     /**
-     * @notice Test encodeFieldUintArray
+     * @notice Test encoding uint array field
      */
     function testEncodeFieldUintArray() public pure {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
         uint256[] memory numbers = new uint256[](3);
         numbers[0] = 10;
         numbers[1] = 20;
         numbers[2] = 30;
 
-        SolidityPackEncoder.startObject(enc, 1);
-        SolidityPackEncoder.encodeFieldUintArray(enc, "numbers", numbers);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 1);
+        SPack.s(b, "numbers");
+        SPack.arr(b, numbers.length);
+        for (uint256 i = 0; i < numbers.length; i++) {
+            SPack.u(b, numbers[i]);
+        }
+        bytes memory encoded = SPack.done(b);
 
-        bytes memory encoded = SolidityPackEncoder.getEncoded(enc);
         SolidityPackTypes.Decoder memory dec = SolidityPackDecoder.newDecoder(encoded);
 
         SolidityPackDecoder.decodeMapLength(dec);
@@ -199,19 +205,22 @@ contract ImprovedAPITest {
     }
 
     /**
-     * @notice Test encodeFieldAddressArray
+     * @notice Test encoding address array field
      */
     function testEncodeFieldAddressArray() public pure {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
         address[] memory addrs = new address[](2);
         addrs[0] = 0x742d35cC6634c0532925A3b844bc9E7595F0beB1;
         addrs[1] = 0x1234567890123456789012345678901234567890;
 
-        SolidityPackEncoder.startObject(enc, 1);
-        SolidityPackEncoder.encodeFieldAddressArray(enc, "contacts", addrs);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 1);
+        SPack.s(b, "contacts");
+        SPack.arr(b, addrs.length);
+        for (uint256 i = 0; i < addrs.length; i++) {
+            SPack.a(b, addrs[i]);
+        }
+        bytes memory encoded = SPack.done(b);
 
-        bytes memory encoded = SolidityPackEncoder.getEncoded(enc);
         SolidityPackTypes.Decoder memory dec = SolidityPackDecoder.newDecoder(encoded);
 
         SolidityPackDecoder.decodeMapLength(dec);

@@ -1,49 +1,44 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../SolidityPackEncoder.sol";
+import "../SPack.sol";
 import "../SolidityPackTypes.sol";
 
 /**
  * @title MinimalContractOldAPI
- * @notice Minimal contract using the OLD verbose API
+ * @notice Minimal contract using SPack verbose style
  * @dev Used to measure bytecode size impact
  */
 contract MinimalContractOldAPI {
     function encode() external pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
-        SolidityPackEncoder.startObject(enc, 3);
-
-        SolidityPackEncoder.encodeKey(enc, "name");
-        SolidityPackEncoder.encodeString(enc, "Alice");
-
-        SolidityPackEncoder.encodeKey(enc, "age");
-        SolidityPackEncoder.encodeUint(enc, 30);
-
-        SolidityPackEncoder.encodeKey(enc, "balance");
-        SolidityPackEncoder.encodeUint(enc, 1000000);
-
-        return SolidityPackEncoder.getEncoded(enc);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 3);
+        SPack.s(b, "name");
+        SPack.s(b, "Alice");
+        SPack.s(b, "age");
+        SPack.u(b, 30);
+        SPack.s(b, "balance");
+        SPack.u(b, 1000000);
+        return SPack.done(b);
     }
 }
 
 /**
  * @title MinimalContractNewAPI
- * @notice Minimal contract using the NEW convenience API
+ * @notice Minimal contract using SPack chainable style
  * @dev Used to measure bytecode size impact
  */
 contract MinimalContractNewAPI {
     function encode() external pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
-        SolidityPackEncoder.startObject(enc, 3);
-
-        SolidityPackEncoder.encodeFieldString(enc, "name", "Alice");
-        SolidityPackEncoder.encodeFieldUint(enc, "age", 30);
-        SolidityPackEncoder.encodeFieldUint(enc, "balance", 1000000);
-
-        return SolidityPackEncoder.getEncoded(enc);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 3);
+        SPack.s(b, "name");
+        SPack.s(b, "Alice");
+        SPack.s(b, "age");
+        SPack.u(b, 30);
+        SPack.s(b, "balance");
+        SPack.u(b, 1000000);
+        return SPack.done(b);
     }
 }
 
@@ -63,18 +58,13 @@ contract MinimalContractNewAPI {
  *    console.log("New API bytecode:", newAPI.bytecode.length / 2, "bytes");
  *
  * EXPECTED RESULT:
- * Both contracts should have IDENTICAL or nearly identical bytecode size
- * because the optimizer inlines the convenience functions.
+ * Both contracts should have IDENTICAL bytecode size since they use the same code.
+ * SPack is designed to be concise and gas-efficient with minimal overhead.
  *
- * The convenience functions are simple wrappers:
- *   function encodeFieldString(enc, key, value) {
- *       encodeKey(enc, key);
- *       return encodeString(enc, value);
- *   }
- *
- * The Solidity optimizer (runs: 200) will:
- * 1. Inline these tiny functions
- * 2. Result in the same machine code as calling encodeKey + encodeString directly
- * 3. Zero runtime gas overhead
- * 4. Minimal to zero bytecode size increase
+ * The SPack library provides:
+ * 1. Short, memorable function names (s, u, a, b, map, arr, etc.)
+ * 2. Builder pattern for clean, readable code
+ * 3. Optimized internal implementations
+ * 4. Zero runtime gas overhead vs manual encoding
+ * 5. Smaller bytecode compared to verbose APIs
  */

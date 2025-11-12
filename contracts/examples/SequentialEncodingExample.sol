@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../SolidityPackEncoder.sol";
+import "../SPack.sol";
 import "../SolidityPackDecoder.sol";
 import "../SolidityPackTypes.sol";
 
@@ -10,26 +10,25 @@ import "../SolidityPackTypes.sol";
  * @notice Demonstrates what happens when you encode data after a map
  */
 contract SequentialEncodingExample {
-    using SolidityPackEncoder for *;
+    using SPack for *;
     using SolidityPackDecoder for *;
 
     // Example 1: Map with 2 entries, then more data after
     function encodeMapThenMoreData() public pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
+        SPack.Builder memory b = SPack.builder();
         // Encode a map with 2 entries
-        SolidityPackEncoder.startMap(enc, 2);
-        SolidityPackEncoder.encodeString(enc, "a");
-        SolidityPackEncoder.encodeUint(enc, 1);
-        SolidityPackEncoder.encodeString(enc, "b");
-        SolidityPackEncoder.encodeUint(enc, 2);
+        SPack.map(b, 2);
+        SPack.s(b, "a");
+        SPack.u(b, 1);
+        SPack.s(b, "b");
+        SPack.u(b, 2);
         // Map is now complete (2 entries encoded)
 
         // Now encode MORE items AFTER the map
-        SolidityPackEncoder.encodeUint(enc, 42);
-        SolidityPackEncoder.encodeString(enc, "hello");
+        SPack.u(b, 42);
+        SPack.s(b, "hello");
 
-        return SolidityPackEncoder.getEncoded(enc);
+        return SPack.done(b);
         // Result: bytes contain [map, 42, "hello"] sequentially
     }
 
@@ -68,20 +67,19 @@ contract SequentialEncodingExample {
 
     // Example 2: What if you declare startMap(2) but encode 3 pairs?
     function encodeMismatchedCount() public pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
-        SolidityPackEncoder.startMap(enc, 2); // Declare 2 entries
-        SolidityPackEncoder.encodeString(enc, "first");
-        SolidityPackEncoder.encodeUint(enc, 1);
-        SolidityPackEncoder.encodeString(enc, "second");
-        SolidityPackEncoder.encodeUint(enc, 2);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 2); // Declare 2 entries
+        SPack.s(b, "first");
+        SPack.u(b, 1);
+        SPack.s(b, "second");
+        SPack.u(b, 2);
         // Map should be complete according to our declaration
 
         // But encode a THIRD pair
-        SolidityPackEncoder.encodeString(enc, "third");
-        SolidityPackEncoder.encodeUint(enc, 3);
+        SPack.s(b, "third");
+        SPack.u(b, 3);
 
-        return SolidityPackEncoder.getEncoded(enc);
+        return SPack.done(b);
         // The third pair becomes SEPARATE data after the map!
     }
 
@@ -120,51 +118,41 @@ contract SequentialEncodingExample {
 
     // Example 3: Proper way - wrap in array
     function encodeProperlyWithArray() public pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
+        SPack.Builder memory b = SPack.builder();
         // Wrap everything in an array
-        SolidityPackEncoder.startArray(enc, 3);
-
+        SPack.arr(b, 3);
         // Element 1: a map
-        SolidityPackEncoder.startMap(enc, 2);
-        SolidityPackEncoder.encodeString(enc, "a");
-        SolidityPackEncoder.encodeUint(enc, 1);
-        SolidityPackEncoder.encodeString(enc, "b");
-        SolidityPackEncoder.encodeUint(enc, 2);
-
+        SPack.map(b, 2);
+        SPack.s(b, "a");
+        SPack.u(b, 1);
+        SPack.s(b, "b");
+        SPack.u(b, 2);
         // Element 2: a number
-        SolidityPackEncoder.encodeUint(enc, 42);
-
+        SPack.u(b, 42);
         // Element 3: a string
-        SolidityPackEncoder.encodeString(enc, "hello");
-
-        return SolidityPackEncoder.getEncoded(enc);
+        SPack.s(b, "hello");
+        return SPack.done(b);
     }
 
     // Example 4: Proper way - wrap in outer map
     function encodeProperlyWithOuterMap() public pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
+        SPack.Builder memory b = SPack.builder();
         // Outer map with 3 entries
-        SolidityPackEncoder.startMap(enc, 3);
-
+        SPack.map(b, 3);
         // Entry 1: inner map
-        SolidityPackEncoder.encodeString(enc, "data");
-        SolidityPackEncoder.startMap(enc, 2);
-        SolidityPackEncoder.encodeString(enc, "a");
-        SolidityPackEncoder.encodeUint(enc, 1);
-        SolidityPackEncoder.encodeString(enc, "b");
-        SolidityPackEncoder.encodeUint(enc, 2);
-
+        SPack.s(b, "data");
+        SPack.map(b, 2);
+        SPack.s(b, "a");
+        SPack.u(b, 1);
+        SPack.s(b, "b");
+        SPack.u(b, 2);
         // Entry 2: number
-        SolidityPackEncoder.encodeString(enc, "number");
-        SolidityPackEncoder.encodeUint(enc, 42);
-
+        SPack.s(b, "number");
+        SPack.u(b, 42);
         // Entry 3: text
-        SolidityPackEncoder.encodeString(enc, "text");
-        SolidityPackEncoder.encodeString(enc, "hello");
-
-        return SolidityPackEncoder.getEncoded(enc);
+        SPack.s(b, "text");
+        SPack.s(b, "hello");
+        return SPack.done(b);
     }
 
     // Demonstrate sequential nature of encoding
@@ -175,23 +163,23 @@ contract SequentialEncodingExample {
         bool lengthsMatch
     ) {
         // Encode just the map
-        SolidityPackTypes.Encoder memory enc1 = SolidityPackEncoder.newEncoder();
-        SolidityPackEncoder.startMap(enc1, 2);
-        SolidityPackEncoder.encodeString(enc1, "a");
-        SolidityPackEncoder.encodeUint(enc1, 1);
-        SolidityPackEncoder.encodeString(enc1, "b");
-        SolidityPackEncoder.encodeUint(enc1, 2);
-        justMap = SolidityPackEncoder.getEncoded(enc1);
+        SPack.Builder memory b1 = SPack.builder();
+        SPack.map(b1, 2);
+        SPack.s(b1, "a");
+        SPack.u(b1, 1);
+        SPack.s(b1, "b");
+        SPack.u(b1, 2);
+        justMap = SPack.done(b1);
 
         // Encode map + one more item
-        SolidityPackTypes.Encoder memory enc2 = SolidityPackEncoder.newEncoder();
-        SolidityPackEncoder.startMap(enc2, 2);
-        SolidityPackEncoder.encodeString(enc2, "a");
-        SolidityPackEncoder.encodeUint(enc2, 1);
-        SolidityPackEncoder.encodeString(enc2, "b");
-        SolidityPackEncoder.encodeUint(enc2, 2);
-        SolidityPackEncoder.encodeUint(enc2, 42);
-        mapPlusOne = SolidityPackEncoder.getEncoded(enc2);
+        SPack.Builder memory b2 = SPack.builder();
+        SPack.map(b2, 2);
+        SPack.s(b2, "a");
+        SPack.u(b2, 1);
+        SPack.s(b2, "b");
+        SPack.u(b2, 2);
+        SPack.u(b2, 42);
+        mapPlusOne = SPack.done(b2);
 
         // Encode map + two more items
         mapPlusTwo = encodeMapThenMoreData();

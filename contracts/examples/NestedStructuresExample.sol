@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../SolidityPackEncoder.sol";
+import "../SPack.sol";
 import "../SolidityPackDecoder.sol";
 import "../SolidityPackTypes.sol";
 
@@ -10,72 +10,58 @@ import "../SolidityPackTypes.sol";
  * @notice Demonstrates encoding and decoding nested maps and arrays
  */
 contract NestedStructuresExample {
-    using SolidityPackEncoder for *;
+    using SPack for *;
     using SolidityPackDecoder for *;
 
     // Example 1: Map with nested map
     // Structure: {outer: 42, nested: {inner: 100, name: "test"}}
     function encodeNestedMap() public pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
-        SolidityPackEncoder.startMap(enc, 2);              // Outer map: 2 entries
-
-        SolidityPackEncoder.encodeString(enc, "outer");    // Entry 1: key
-        SolidityPackEncoder.encodeUint(enc, 42);           // Entry 1: value
-
-        SolidityPackEncoder.encodeString(enc, "nested");   // Entry 2: key
-        SolidityPackEncoder.startMap(enc, 2);              // Entry 2: value is a MAP!
-            SolidityPackEncoder.encodeString(enc, "inner"); // Nested key 1
-            SolidityPackEncoder.encodeUint(enc, 100);       // Nested value 1
-            SolidityPackEncoder.encodeString(enc, "name");  // Nested key 2
-            SolidityPackEncoder.encodeString(enc, "test");  // Nested value 2
-        // No "end map" needed - decoder counts!
-
-        return SolidityPackEncoder.getEncoded(enc);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 2);              // Outer map: 2 entries
+        SPack.s(b, "outer");          // Entry 1: key
+        SPack.u(b, 42);               // Entry 1: value
+        SPack.s(b, "nested");         // Entry 2: key
+        SPack.map(b, 2);              // Entry 2: value is a MAP!
+        SPack.s(b, "inner");          // Nested key 1
+        SPack.u(b, 100);              // Nested value 1
+        SPack.s(b, "name");           // Nested key 2
+        SPack.s(b, "test");           // Nested value 2
+        return SPack.done(b);
     }
 
     // Example 2: Map with array value
     // Structure: {name: "Alice", scores: [10, 20, 30]}
     function encodeMapWithArray() public pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
-        SolidityPackEncoder.startMap(enc, 2);
-
-        SolidityPackEncoder.encodeString(enc, "name");
-        SolidityPackEncoder.encodeString(enc, "Alice");
-
-        SolidityPackEncoder.encodeString(enc, "scores");
-        SolidityPackEncoder.startArray(enc, 3);            // Array as value!
-            SolidityPackEncoder.encodeUint(enc, 10);
-            SolidityPackEncoder.encodeUint(enc, 20);
-            SolidityPackEncoder.encodeUint(enc, 30);
-
-        return SolidityPackEncoder.getEncoded(enc);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 2);
+        SPack.s(b, "name");
+        SPack.s(b, "Alice");
+        SPack.s(b, "scores");
+        SPack.arr(b, 3);              // Array as value!
+        SPack.u(b, 10);
+        SPack.u(b, 20);
+        SPack.u(b, 30);
+        return SPack.done(b);
     }
 
     // Example 3: Complex nesting
     // Structure: {id: 1, data: {tags: ["a", "b"], active: true}, count: 5}
     function encodeComplexNesting() public pure returns (bytes memory) {
-        SolidityPackTypes.Encoder memory enc = SolidityPackEncoder.newEncoder();
-
-        SolidityPackEncoder.startMap(enc, 3);                  // Level 1: Map with 3 entries
-
-        SolidityPackEncoder.encodeString(enc, "id");
-        SolidityPackEncoder.encodeUint(enc, 1);
-
-        SolidityPackEncoder.encodeString(enc, "data");
-        SolidityPackEncoder.startMap(enc, 2);                  // Level 2: Nested map
-            SolidityPackEncoder.encodeString(enc, "tags");
-            SolidityPackEncoder.startArray(enc, 2);            // Level 3: Array in nested map
-                SolidityPackEncoder.encodeString(enc, "a");
-                SolidityPackEncoder.encodeString(enc, "b");
-            SolidityPackEncoder.encodeString(enc, "active");
-            SolidityPackEncoder.encodeBool(enc, true);
-
-        SolidityPackEncoder.encodeString(enc, "count");
-        SolidityPackEncoder.encodeUint(enc, 5);
-
-        return SolidityPackEncoder.getEncoded(enc);
+        SPack.Builder memory b = SPack.builder();
+        SPack.map(b, 3);              // Level 1: Map with 3 entries
+        SPack.s(b, "id");
+        SPack.u(b, 1);
+        SPack.s(b, "data");
+        SPack.map(b, 2);              // Level 2: Nested map
+        SPack.s(b, "tags");
+        SPack.arr(b, 2);              // Level 3: Array in nested map
+        SPack.s(b, "a");
+        SPack.s(b, "b");
+        SPack.s(b, "active");
+        SPack.bool_(b, true);
+        SPack.s(b, "count");
+        SPack.u(b, 5);
+        return SPack.done(b);
     }
 
     // Decode Example 1: Step by step
